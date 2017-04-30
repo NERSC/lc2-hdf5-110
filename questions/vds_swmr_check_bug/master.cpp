@@ -1,11 +1,12 @@
 #include <cstdio>
 #include <cstdlib>
 #include "hdf5.h"
-
+#include <iostream>
 #include <vector>
 #include <string>
 
 #include "params.h"
+using namespace std;
 
 int main(int argc, const char *argv[]) {
   int num_args = 2 + num_writers;

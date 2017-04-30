@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include "hdf5.h"
 #include "hdf5_hl.h"
-
+#include <iostream>
 #include "params.h"
 
 int main(int argc, char *argv[]) {
@@ -28,7 +28,8 @@ int main(int argc, char *argv[]) {
   
   hid_t access_id = H5Pcreate(H5P_DATASET_ACCESS);
   size_t rdcc_nslots = 101;
-  size_t rdcc_nbytes = chunk_size * 24;
+  //size_t rdcc_nbytes = chunk_size * 24;
+  size_t rdcc_nbytes = 0; //changed by jialin according to Quincey's suggestiosn
   double rdcc_w0 = 0.75;
   H5Pset_chunk_cache(access_id, rdcc_nslots, rdcc_nbytes, rdcc_w0);
 
