@@ -5,7 +5,7 @@
 #include "hdf5.h"
 #include "hdf5_hl.h"
 
-#include "params.h"
+#include "params_real.h"
 
 hid_t H5Fopen_with_polling(const char *fname, unsigned flags, hid_t fapl_id) {
   const int one_second_in_milliseconds = 1000000;

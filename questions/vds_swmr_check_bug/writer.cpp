@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
 
   H5Fstart_swmr_write(fid);
   //H5Oenable_mdc_flushes(fid);
-  for (int64_t elem = 0; elem < master_len; elem += num_writers) {
+  for (int64_t elem = writer; elem < master_len; elem += num_writers) {
     H5DOappend(dset, H5P_DEFAULT, 0, 1, H5T_NATIVE_INT64, &elem);
     usleep(microseconds_between_writes);
     if ((elem % flush_interval) == 0) {

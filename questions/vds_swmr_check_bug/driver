@@ -1,29 +1,25 @@
 #!/bin/bash 
 
-LOC=$SCRATCH/swmr_test
+LOC=$SCRATCH/swmr_test_virtual
 #LOC=/project/projectdirs/mpccc/fbench/jialin/swmr_test
 #rm -rf $LOC
-#mkdir -p $LOC
+mkdir -p $LOC
 rm $LOC/vds_swmr*
 sleep 3
 #CC -Wall writer.cpp -o writer
 #CC -Wall master.cpp -o master
 #CC -Wall reader.cpp -o reader
-CC -Wall reader_real.cpp -o reader_real
 #./master $LOC/vds_swmr_master.h5 $LOC/vds_swmr_writer_0.h5 $LOC/vds_swmr_writer_1.h5 $LOC/vds_swmr_writer_2.h5
 var=$(( ( RANDOM % 100000 )  + 1 ))
 var1=$((var + 1))
 var2=$((var - 1 ))
-#./writer 0  $LOC/vds_swmr_writer_${var}.h5 &
+./writer 0  $LOC/vds_swmr_writer_${var}.h5 &
 ./writer 1  $LOC/vds_swmr_writer_${var1}.h5 &
-#./writer 2  $LOC/vds_swmr_writer_${var2}.h5 &
-#./master $LOC/vds_swmr_master.h5 $LOC/vds_swmr_writer_${var}.h5 $LOC/vds_swmr_writer_${var1}.h5 $LOC/vds_swmr_writer_${var2}.h5
-
+./writer 2  $LOC/vds_swmr_writer_${var2}.h5 &
+./master $LOC/vds_swmr_master.h5 $LOC/vds_swmr_writer_${var}.h5 $LOC/vds_swmr_writer_${var1}.h5 $LOC/vds_swmr_writer_${var2}.h5
+echo $LOC/vds_swmr_master.h5
 #h5dump -H vds_swmr_write_0.h5
-#./reader 0  $LOC/vds_swmr_master.h5 &
+./reader 0  $LOC/vds_swmr_master.h5 
 #./reader 0  $LOC/vds_swmr_master.h5 &
 #./reader 1  $LOC/vds_swmr_master.h5 &
-./reader_real 0  $LOC/vds_swmr_writer_${var1}.h5 &
-#./reader_real 1  $LOC/vds_swmr_writer_${var1}.h5 &
-#./reader_real 0  $LOC/vds_swmr_writer_${var}.h5 &
-#./reader_real 1  $LOC/vds_swmr_writer_${var}.h5 &
+

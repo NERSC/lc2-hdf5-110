@@ -3,7 +3,7 @@
 #include "hdf5.h"
 #include "hdf5_hl.h"
 #include <iostream>
-#include "params.h"
+#include "params_real.h"
 #include "md5.h"
 
 int main(int argc, char *argv[]) {

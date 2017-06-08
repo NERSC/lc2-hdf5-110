@@ -69,11 +69,12 @@ void wait_for_dset_to_get_to_length(hid_t dset, hsize_t len) {
     usleep(microseconds_between_reader_wait);
     microseconds_waited_so_far += microseconds_between_reader_wait;
     fi=H5Drefresh(dset);
-/*    if (fi>=0)
+  /*    if (fi>=0)
       std::cout <<"reader refresh before polling:ok"<<std::endl;
     else
       std::cout<<"reader refresh before polling:error:"<<fi<<std::endl;
-*/    H5LDget_dset_dims(dset, &dim);
+  */
+    H5LDget_dset_dims(dset, &dim);
     std::cout << "reader polled dim size:"<<dim<<std::endl;
   }
 }
@@ -104,7 +105,7 @@ int64_t read_from_dset(hid_t dset, hsize_t idx) {
   dcpl = H5Dget_create_plist (dset);
   unsigned int    flags, filter_info;
   int nfilter = H5Pget_nfilters(dcpl);
-  std::cout<<"number of filters:"<<nfilter<<std::endl;
+//  std::cout<<"number of filters:"<<nfilter<<std::endl;
 //  H5Z_filter_t  filter_type = H5Pget_filter (dcpl, 0, &flags, &nelmts, NULL, 0, NULL,
 //                &filter_info);
 //  std::cout<<"Filter type is: "<<std::endl;

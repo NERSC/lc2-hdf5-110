@@ -4,8 +4,7 @@
 #include <unistd.h>
 
 const int64_t writer_len = 400;
-//const int num_writers = 3;
-const int num_writers = 1;
+const int num_writers = 3;
 const int64_t num_readers = 2;
 const int64_t master_len = num_writers * writer_len;
 const hsize_t chunk_size = 1;
