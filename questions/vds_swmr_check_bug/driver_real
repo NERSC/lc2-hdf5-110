@@ -1,0 +1,19 @@
+#!/bin/bash 
+
+LOC=$SCRATCH/swmr_test
+#LOC=/project/projectdirs/mpccc/fbench/jialin/swmr_test
+mkdir -p $LOC
+rm $LOC/vds_swmr*
+sleep 3
+CC -Wall writer_real.cpp -o writer_real
+CC -Wall reader_real.cpp -o reader_real
+var=$(( ( RANDOM % 100000 )  + 1 ))
+var1=$((var + 1))
+var2=$((var - 1 ))
+#./writer 0  $LOC/swmr_writer_${var}.h5 &
+./writer_real 1  $LOC/swmr_writer_${var1}.h5 &
+#./writer 2  $LOC/swmr_writer_${var2}.h5 &
+./reader_real 0  $LOC/swmr_writer_${var1}.h5 &
+#./reader_real 1  $LOC/swmr_writer_${var1}.h5 &
+#./reader_real 0  $LOC/swmr_writer_${var}.h5 &
+#./reader_real 1  $LOC/swmr_writer_${var}.h5 &

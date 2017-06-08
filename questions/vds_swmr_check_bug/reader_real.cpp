@@ -61,26 +61,23 @@ void wait_for_dset_to_get_to_length(hid_t dset, hsize_t len) {
   hid_t fi;
   int microseconds_waited_so_far = 0;
   while (true) {
-    //std::cout<<"updted dim:"<<dim<<"asked len:"<<len<<std::endl;
+    //std::cout<<"updted dim:"<<dim<<"asked for:"<<len<<std::endl;
     if (dim >=len) return;
     if (microseconds_waited_so_far > max_reader_wait_microseconds) {
+      return;
       throw std::runtime_error("reader wait timeout");
     }
     usleep(microseconds_between_reader_wait);
     microseconds_waited_so_far += microseconds_between_reader_wait;
     fi=H5Drefresh(dset);
-/*    if (fi>=0)
-      std::cout <<"reader refresh before polling:ok"<<std::endl;
-    else
-      std::cout<<"reader refresh before polling:error:"<<fi<<std::endl;
-*/    H5LDget_dset_dims(dset, &dim);
-    std::cout << "reader polled dim size:"<<dim<<std::endl;
+      
+    H5LDget_dset_dims(dset, &dim);
   }
 }
 
 int64_t read_from_dset(hid_t dset, hsize_t idx) {
   hid_t filespace = H5Dget_space(dset);
-
+  //std::cout<<"idx:"<<idx<<std::endl;
   hsize_t start = idx;
   hsize_t stride = 1;
   hsize_t count = 1;
@@ -104,7 +101,15 @@ int64_t read_from_dset(hid_t dset, hsize_t idx) {
   dcpl = H5Dget_create_plist (dset);
   unsigned int    flags, filter_info;
   int nfilter = H5Pget_nfilters(dcpl);
-  std::cout<<"number of filters:"<<nfilter<<std::endl;
+  //add filter later
+  herr_t status=H5Dread(dset, H5T_NATIVE_INT64, memspace, filespace, H5P_DEFAULT, &data);
+  if(status<0) printf("H5Dread returns: %i\n",status);
+  H5Sclose( filespace );
+  H5Sclose( memspace );
+  //std::cout<<" start: "<<start<<" stride:"<<stride<<" count:"<<count<<" block:"<<block<<" value:"<<data<<std::endl;
+  return data;
+}
+//  std::cout<<"number of filters:"<<nfilter<<std::endl;
 //  H5Z_filter_t  filter_type = H5Pget_filter (dcpl, 0, &flags, &nelmts, NULL, 0, NULL,
 //                &filter_info);
 //  std::cout<<"Filter type is: "<<std::endl;
@@ -128,14 +133,6 @@ int64_t read_from_dset(hid_t dset, hsize_t idx) {
             printf ("H5Z_FILTER_SCALEOFFSET\n");
     }
 */
-  herr_t status=H5Dread(dset, H5T_NATIVE_INT64, memspace, filespace, H5P_DEFAULT, &data);
-  if(status<0) printf("H5Dread returns: %i\n",status);
-  H5Sclose( filespace );
-  H5Sclose( memspace );
-
-  return data;
-}
-
 int main(int argc, char *argv[]) {
   if (argc != 3) {
     fprintf(stderr, "usage: reader i inputfile\n");
@@ -151,16 +148,17 @@ int main(int argc, char *argv[]) {
                                    H5F_ACC_RDONLY | H5F_ACC_SWMR_READ, 
                                    H5P_DEFAULT);
   
-  hid_t dset = open_dset(fid, "vds");
+  hid_t dset = open_dset(fid, "data");
 
-  for (int64_t idx = 0; idx < master_len; ++idx) {
-//  for (int64_t idx = 0; idx < master_len/3; ++idx) {
-    if ((idx % num_readers) != reader) {
-      continue;
-    }
+//  for (int64_t idx = 0; idx < master_len; ++idx) {
+  for (int64_t idx = 0; idx < writer_len; ++idx) {
+    //if ((idx % num_readers) != reader) {
+    //  continue;
+    //}
     wait_for_dset_to_get_to_length(dset, idx+1);
+   // std::cout<<"reader "<<reader<<" before read, idx:"<<idx<<std::endl;
     int64_t value = read_from_dset(dset, idx);
-    
+   // std::cout<<"reader "<<reader<<" after read idx:"<<idx<<std::endl;
     if (value != idx) {
       std::cout << "ERROR reader:" << reader << " read 0x" << std::hex << value 
                 << " != 0x" << std::hex << idx << " for entry " 

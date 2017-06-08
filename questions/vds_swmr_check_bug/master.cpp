@@ -4,7 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
-
+#include "md5.h"
 #include "params.h"
 using namespace std;
 
@@ -23,12 +23,16 @@ int main(int argc, const char *argv[]) {
 
   hid_t fapl = H5Pcreate(H5P_FILE_ACCESS);
   H5Pset_libver_bounds(fapl, H5F_LIBVER_LATEST, H5F_LIBVER_LATEST);
+  
   hid_t fid = H5Fcreate(master_outputfile, H5F_ACC_TRUNC, H5P_DEFAULT, fapl);
 
   int64_t fill = 0xaabbccddeeff;
   hid_t dcpl = H5Pcreate(H5P_DATASET_CREATE);
   H5Pset_fill_value(dcpl, H5T_NATIVE_INT64, &fill);
- 
+
+  //herr_t status = H5Zregister(FILTER_MD5, "md5 checksum", md5_filter);
+  //H5Pset_filter(dcpl, FILTER_MD5, 0, 0, NULL);
+  //H5Pset_fletcher32 (dcpl);
   const int rank1 = 1;
   hsize_t size0 = 0;
   hsize_t unlimited = H5S_UNLIMITED, countUnlimited=H5S_UNLIMITED, blockUnlimited=H5S_UNLIMITED;
@@ -48,12 +52,18 @@ int main(int argc, const char *argv[]) {
   }
   hid_t access_id = H5Pcreate(H5P_DATASET_ACCESS);
   H5Pset_virtual_view( access_id, H5D_VDS_FIRST_MISSING);
+  //apply md5 filter to chunked dataset
+  //H5Pset_chunk(dcpl, rank1, &chunk_size);
+ // H5Pset_fletcher32 (dcpl);
+  int nfilter = H5Pget_nfilters(dcpl);
+  std::cout<<"number of filters in master file:"<<nfilter<<std::endl; 
+
   hid_t dset = H5Dcreate2(fid, "vds", H5T_NATIVE_INT64, vds_space, 
                           H5P_DEFAULT, dcpl, access_id);
 
   // don't know if I need this since the master is not updating the file and is about to 
   // close it
-  H5Fstart_swmr_write(fid);
+ // H5Fstart_swmr_write(fid);
 
   H5Dclose(dset);
   H5Pclose(access_id);
